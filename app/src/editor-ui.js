@@ -5,7 +5,6 @@ import { panelsForSize, pointInConvexPolygon } from './layouts.js';
 import { tracePolygon } from './photo-panels.js';
 import { makePhotoThumb } from './photo-library.js';
 
-const SVG_NS = 'http://www.w3.org/2000/svg';
 
 /** Grid of layout buttons (data-layout-id), each with a tiny SVG diagram of its tilted panels. */
 export function buildLayoutPicker(container, layouts, onPick) {
@@ -216,28 +215,22 @@ export function drawSelectionOverlay(ctx, polygon) {
 /** Inline SVG of a layout's panels at a small 3:2 size (with the caption band left empty). */
 function layoutDiagramSVG(layoutId) {
   const W = 60, H = 40;
-  const svg = document.createElementNS(SVG_NS, 'svg');
-  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  svg.setAttribute('class', 'layout-diagram');
-  svg.setAttribute('aria-hidden', 'true');
-  const bg = document.createElementNS(SVG_NS, 'rect');
-  bg.setAttribute('width', W);
-  bg.setAttribute('height', H);
-  bg.setAttribute('rx', 2);
-  bg.setAttribute('fill', '#2a0f3f');
-  svg.append(bg);
   const colours = ['#FF2BD6', '#FF6B3D', '#FFB347', '#19F0FF', '#B05CFF', '#FF4F7A'];
   // Computed at 10× then scaled down, so the pixel gutter minimum stays proportional.
-  for (const panel of panelsForSize(layoutId, W * 10, H * 10)) {
-    const poly = document.createElementNS(SVG_NS, 'polygon');
-    poly.setAttribute('points', panel.points.map(([x, y]) => `${(x / 10).toFixed(1)},${(y / 10).toFixed(1)}`).join(' '));
-    poly.setAttribute('fill', colours[panel.index % colours.length]);
-    poly.setAttribute('fill-opacity', '0.85');
-    poly.setAttribute('stroke', '#fff');
-    poly.setAttribute('stroke-width', '0.6');
-    svg.append(poly);
-  }
-  return svg;
+  const polys = panelsForSize(layoutId, W * 10, H * 10).map((panel) => {
+    const points = panel.points.map(([x, y]) => `${(x / 10).toFixed(1)},${(y / 10).toFixed(1)}`).join(' ');
+    return `<polygon points="${escapeAttr(points)}" fill="${escapeAttr(colours[panel.index % colours.length])}"` +
+      ` fill-opacity="0.85" stroke="#fff" stroke-width="0.6"></polygon>`;
+  }).join('');
+  // Parsed by the HTML parser, which puts <svg> and its children in the SVG namespace.
+  const tpl = document.createElement('template');
+  tpl.innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="layout-diagram" aria-hidden="true">` +
+    `<rect width="${W}" height="${H}" rx="2" fill="#2a0f3f"></rect>${polys}</svg>`;
+  return tpl.content.firstElementChild;
+}
+
+function escapeAttr(value) {
+  return String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 function byId(id) {
