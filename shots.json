@@ -1,5 +1,6 @@
 [
-  { "name": "1-cover.jpg", "query": "?shot=cover&photo=pier&caption=Sunset%20Heist", "w": 1080, "h": 1080 },
-  { "name": "2-editor.jpg", "query": "?shot=editor&photo=boulevard&caption=Boulevard%20Queen", "w": 1280, "h": 720 },
-  { "name": "3-cover.jpg", "query": "?shot=cover&photo=boulevard&caption=Boulevard%20Queen", "w": 1080, "h": 1080 }
+  { "file": "1-cover-landscape-1920x1080.jpg", "query": "?shot=cover-landscape", "viewport": { "w": 1280, "h": 720 }, "export": "cover-landscape-1920x1080.png", "shows": "Exported 1920x1080 PNG alone: Hero Wall layout: boulevard hero + four tilted cards from the other sample photos, Vice Sunset grade, Comic effect, caption SUNSET HEIST" },
+  { "file": "2-editor-photos-loaded.jpg", "query": "?shot=editor", "viewport": { "w": 1280, "h": 720 }, "shows": "Full editor: sample photos loaded, Six-Pack layout, panel 2 selected in the inspector, status line after a real 1080x1080 export" },
+  { "file": "3-cover-portrait-1080x1350.jpg", "query": "?shot=cover-portrait", "viewport": { "w": 1024, "h": 1280 }, "export": "cover-portrait-1080x1350.png", "shows": "Exported 1080x1350 PNG alone: Mosaic layout, underpass + rider + boulevard, Neon Night grade, caption NEON NIGHTS" },
+  { "file": "4-cover-square-1080x1080.jpg", "query": "?shot=cover-square", "viewport": { "w": 1080, "h": 1080 }, "export": "cover-square-1080x1080.png", "shows": "Exported 1080x1080 PNG alone: Hero + Trio layout, pier hero + speedboat in three panels with different crops, Golden Hour grade, caption PARADISE FOUND" }
 ]

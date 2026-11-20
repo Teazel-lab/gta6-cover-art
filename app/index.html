@@ -3,21 +3,130 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cover Snap</title>
+<title>NEON COAST Cover Studio — GTA-style multi-panel poster maker</title>
+<meta name="description" content="Turn your own photos and a caption into tilted multi-panel neon-sunset poster cover art. Exports PNG at 1080×1080, 1080×1350 and 1920×1080. Works offline.">
 <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-<main class="app">
-  <section class="controls">
-    <h1>Cover Snap</h1>
-    <p>A photo and a caption, made into a square cover.</p>
-    <label>Photo <input id="photo" type="file" accept="image/*"></label>
-    <label>Caption <input id="caption" type="text" maxlength="40" value="Sunset Heist"></label>
-    <button id="export" type="button">Export PNG 1080 x 1080</button>
-    <p id="status" role="status"></p>
-  </section>
-  <canvas id="cover" width="1080" height="1080" aria-label="The cover"></canvas>
-</main>
+<div class="studio-shell">
+  <header class="studio-header">
+    <h1 id="app-title" class="brand-wordmark"><span class="brand-neon">NEON COAST</span> <span class="brand-sub">Cover Studio</span></h1>
+    <ol class="flow-strip" aria-label="How it works">
+      <li><b>1</b> Add photos</li>
+      <li><b>2</b> Pick a layout</li>
+      <li><b>3</b> Frame panels</li>
+      <li><b>4</b> Caption</li>
+      <li><b>5</b> Grade &amp; effects</li>
+      <li><b>6</b> Export PNG</li>
+    </ol>
+  </header>
+
+  <noscript><p class="noscript-note">NEON COAST Cover Studio needs JavaScript to build your poster. Please enable it and reload.</p></noscript>
+
+  <main class="studio-grid">
+    <!-- Left: photos + layout -->
+    <aside class="steps-sidebar" aria-label="Photos and layout">
+      <section class="step-card step-photos" aria-labelledby="step-photos-title">
+        <h2 id="step-photos-title" class="step-title"><span class="step-number">1</span> Add photos</h2>
+        <label id="photo-drop" class="photo-dropzone" tabindex="0">
+          <input id="photo-input" class="visually-hidden" type="file" accept="image/*" multiple>
+          <span class="dropzone-icon" aria-hidden="true">＋</span>
+          <span class="dropzone-text"><strong>Drop photos here</strong> or click to browse<br><small>Several at once · paste works too</small></span>
+        </label>
+        <div class="photo-tray-row">
+          <div id="photo-tray" class="photo-tray" aria-label="Loaded photos — drag one onto a panel"></div>
+          <button id="sample-photos" class="ghost-button" type="button">Try sample photos</button>
+        </div>
+      </section>
+
+      <section class="step-card step-layout" aria-labelledby="step-layout-title">
+        <h2 id="step-layout-title" class="step-title"><span class="step-number">2</span> Pick a layout</h2>
+        <div id="layout-picker" class="layout-picker" role="group" aria-label="Panel layouts"></div>
+      </section>
+    </aside>
+
+    <!-- Centre: live preview + panel framing -->
+    <section class="preview-column" aria-label="Live preview">
+      <div id="preview-wrap" class="preview-wrap">
+        <div class="preview-toolbar">
+          <div id="size-tabs" class="size-tabs" role="tablist" aria-label="Poster size">
+            <button type="button" class="size-tab is-active" role="tab" data-size-id="square"><span class="size-name">Square</span> <span class="size-px">1080×1080</span></button>
+            <button type="button" class="size-tab" role="tab" data-size-id="portrait"><span class="size-name">Portrait</span> <span class="size-px">1080×1350</span></button>
+            <button type="button" class="size-tab" role="tab" data-size-id="landscape"><span class="size-name">Landscape</span> <span class="size-px">1920×1080</span></button>
+          </div>
+          <p id="preview-hint" class="preview-hint">Click a panel to select · drag to pan · scroll to zoom</p>
+        </div>
+        <div class="preview-stage">
+          <canvas id="preview-canvas" class="preview-canvas" width="1080" height="1080" aria-label="Live poster preview"></canvas>
+        </div>
+      </div>
+
+      <section id="panel-inspector" class="step-card panel-inspector" aria-labelledby="step-frame-title">
+        <h2 id="step-frame-title" class="step-title"><span class="step-number">3</span> Frame each panel <span id="panel-label" class="panel-label">Panel 1 of 4</span></h2>
+        <div class="inspector-grid">
+          <label class="field field-photo">Photo
+            <select id="panel-photo-select" class="field-select"><option value="">— none —</option></select>
+          </label>
+          <label class="field field-range">Zoom
+            <input id="panel-zoom" type="range" min="1" max="5" step="0.01" value="1">
+          </label>
+          <label class="field field-range">Left ↔ Right
+            <input id="panel-x" type="range" min="-1" max="1" step="0.01" value="0">
+          </label>
+          <label class="field field-range">Up ↕ Down
+            <input id="panel-y" type="range" min="-1" max="1" step="0.01" value="0">
+          </label>
+          <div class="inspector-actions">
+            <button id="panel-flip" class="chip-button" type="button">Flip</button>
+            <button id="panel-reset" class="chip-button" type="button">Reset</button>
+            <button id="panel-fill-all" class="chip-button" type="button">Use this photo in every panel</button>
+            <button id="panel-auto" class="chip-button chip-accent" type="button">Auto-fill panels with all photos</button>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- Right: caption, style, export -->
+    <aside class="style-sidebar" aria-label="Style and export">
+      <section class="step-card step-caption" aria-labelledby="step-caption-title">
+        <h2 id="step-caption-title" class="step-title"><span class="step-number">4</span> Caption</h2>
+        <label class="field">Big caption
+          <input id="caption-input" class="text-input caption-field" type="text" maxlength="40" value="ONE NIGHT ON THE COAST" placeholder="Your caption">
+        </label>
+        <label class="field">Tagline
+          <input id="tagline-input" class="text-input" type="text" maxlength="48" value="Summer on the neon coast" placeholder="Small line under the caption">
+        </label>
+        <label class="toggle-field"><input id="credits-toggle" type="checkbox" checked> Show credits block</label>
+      </section>
+
+      <section class="step-card step-style" aria-labelledby="step-style-title">
+        <h2 id="step-style-title" class="step-title"><span class="step-number">5</span> Grade &amp; effects</h2>
+        <div id="grade-picker" class="grade-picker" role="group" aria-label="Colour grade"></div>
+        <label class="field field-range field-inline">Strength
+          <input id="grade-strength" type="range" min="0" max="1" step="0.01" value="0.8">
+        </label>
+        <div id="effect-picker" class="effect-picker" role="group" aria-label="Poster effects"></div>
+      </section>
+
+      <section class="step-card step-export" aria-labelledby="step-export-title">
+        <h2 id="step-export-title" class="step-title"><span class="step-number">6</span> Export PNG</h2>
+        <button id="export-current" class="export-button export-primary" type="button">Export PNG</button>
+        <button id="export-all" class="export-button export-secondary" type="button">Export all 3 sizes</button>
+        <div id="export-list" class="export-list">
+          <button type="button" class="export-size-button" data-export-size="square">1080×1080</button>
+          <button type="button" class="export-size-button" data-export-size="portrait">1080×1350</button>
+          <button type="button" class="export-size-button" data-export-size="landscape">1920×1080</button>
+        </div>
+        <p id="export-status" class="export-status" role="status" aria-live="polite">Ready — nothing exported yet</p>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="studio-footer">
+    <span id="step-count" class="step-count">Photo → PNG in 3 clicks</span>
+    <span class="footer-note">Runs fully offline · your photos never leave this device</span>
+  </footer>
+</div>
 <script type="module" src="./src/main.js"></script>
 </body>
 </html>

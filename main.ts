@@ -1,13 +1,30 @@
-// A working gta6-cover-art-01 entry (Node 22, standard library only): the app is this directory's app/ folder, plain
-// static files a desktop browser loads offline (app/index.html and its ES modules, no library and no network
-// request), and the program hands it in. It copies app/ and screenshots/ from beside this file to /output and writes
-// /output/dossier.json, the summary the judge reads, with the vendored make.fun library. Only the plumbing, not the
-// cover art the bounty asks for: Cover Snap, a plain one-photo square cover with a sunset tint and a bold caption,
-// exported as a 1080 x 1080 PNG. Its two sample photos (app/samples/) were made for make.fun with an image model and
-// are free to use. Build your own GTA-style cover maker in its place, put your 3 or 4 PNG or JPEG screenshots in
-// screenshots/ (the first by name is the cover) and run it.
+// NEON COAST Cover Studio, an entry for the make.fun bounty gta6-cover-art-01 (Node 22+, standard library only).
+// The app is app/: plain static files a desktop browser loads offline (app/index.html, app/style.css, ES modules in
+// app/src/, OFL fonts in app/fonts/, sample photos in app/samples/), no library, no build step, no network request.
+// It turns your own photos and a caption into multi-panel, sunset/neon-graded poster cover art and exports PNGs at
+// 1080x1080, 1080x1350 and 1920x1080 (one click each, or all three). Photos never leave the machine.
 //
-// Serve it locally with `node serve.ts`, then open http://localhost:8080.
+// Modules in app/src/:
+//   main.js              the cover document, live preview and the editor controls wired to it
+//   layouts.js           PANEL_LAYOUTS (tilted multi-panel grids), POST_SIZES and the panel/caption geometry
+//   photo-library.js     loads photos from the file picker and drag-drop, several at once
+//   photo-panels.js      draws each panel: crop, zoom, pan, flip, border and tilt
+//   colour-grades.js     COLOUR_GRADES and applyColourGrade (sunset / neon colour lookup tables)
+//   poster-effects.js    EFFECT_PRESETS: halftone, ink outline, bloom, posterize, film grain, vignette
+//   caption-lettering.js the bold caption, tagline and credits block, set in the bundled OFL fonts
+//   render-cover.js      renderCover / renderCoverToBlob: the whole poster at any size
+//   export-png.js        exportCoverPNG and exportAllSizes (download the PNGs)
+//   editor-ui.js         layout/grade/effect pickers, photo tray, panel inspector, preview drag and zoom
+//   shots.js             the ?shot= scenes the screenshots are taken from
+//
+// Screenshots: `node tools/take-screenshots.mjs` serves app/, renders each scene from shots.json in headless Chrome
+// (exported covers shown exactly as the PNG exporter wrote them, plus the editor with photos loaded) and writes the
+// JPEGs in screenshots/ (the first by name, the landscape cover, is the lead image).
+//
+// This program hands the entry in: it copies app/ and screenshots/ from beside this file to /output and writes
+// /output/dossier.json, the summary the judge reads, with the vendored make.fun library.
+//
+// Run locally: `node serve.ts`, then open http://localhost:8080.
 // Outside the grader's container, MAKEFUN_OUTPUT_DIR stands in for /output:
 //   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 
